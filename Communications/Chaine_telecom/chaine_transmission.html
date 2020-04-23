@@ -1,0 +1,142 @@
+<!--
+Simulateur de chaîne de Transmission Numérique v1.0
+@author: Frédéric BONNARDOT, AGPL-3.0-or-later license
+(c) Frédéric BONNARDOT, April 2020
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+This code is given as is without warranty of any kind.
+In no event shall the authors or copyright holder be liable for any claim
+                                                   damages or other liability.
+-->
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Simulateur de chaîne de Transmission Numérique</title>
+
+		<script type="text/javascript" language="JavaScript" src="telecom.js"></script>
+
+		<style>
+			body {margin:0}
+			canvas {background:#EEEEEE}
+		</style>
+	</head>
+
+	<body>
+		<h1>Simulateur de chaîne de Transmission Numérique</h1>
+		Cette page simule une chaîne de télécommunication numérique basique<br>
+		(c) F. BONNARDOT, Avril 2020
+		<a href="https://www.gnu.org/licenses/agpl-3.0.fr.html">AGPL-3.0-or-later license</a><br>
+		
+		<h1>Emetteur</h1>
+		<label for="donnees">Message à émettre :</label>
+		<input type="text" id="donnees" name="donnees" size="10" value="FB"><br>
+		
+		<label for="bits" id="bits">Message sous forme de bits :</label><br>
+		<label for="constel">Choisissez la constellation :</label>
+		<SELECT name="constel" id="constel" size="1">
+			<OPTION>OOK
+			<OPTION selected>BPSK
+			<OPTION>QPSK
+			<OPTION>8 PSK
+			<OPTION>16 QAM
+		</SELECT><br>
+
+		Diagramme de constellation :<br>
+		<canvas id="diag_const" width="200" height="200"></canvas><br>
+		
+		<label for="etats_bits" id="etats_bits">xx états donc yy bits par symboles :</label><br>
+		<label for="etats" id="etats">Message sous forme d'états :</label><br>
+		<canvas id="fig_etats" width="800" height="200"></canvas><br>
+
+		Correspondance états et tension voie I et Q :<br>
+		<label id="etats_const">tableau états</label><br>
+
+
+		Message sous forme de tension sur la voie I et Q :<br>
+		<label id="etats_donnees">tableau états données</label><br>
+
+		<!--Voies I(t) et Q(t) sans mise en forme :<br>
+		<canvas id="fig_I" width="800" height="200"></canvas><br>
+		<canvas id="fig_Q" width="800" height="200"></canvas><br>
+		-->
+		
+		Mise en forme :<br>
+		
+		Forme d'un symbole :
+		<SELECT name="mef" id="mef" size="1">
+			<OPTION>Valeur constante (droite)
+			<OPTION>RRC Roll off 0
+			<OPTION>RRC Roll off 0.3
+			<OPTION>RRC Roll off 0.6
+			<OPTION>RRC Roll off 0.9
+			<OPTION>RRC Roll off 1.0
+		</SELECT><br>
+		
+		<canvas id="fig_filtre_mef" width="800" height="200"></canvas><br>
+		
+		Voies I(t) et Q(t) après mise en forme :<br>
+		<canvas id="fig_Imef" width="800" height="200"></canvas><br>
+		<canvas id="fig_Qmef" width="800" height="200"></canvas><br>
+
+		Diagrammes de l'oeil associés :<br>
+		<canvas id="fig_oeilI" width="800" height="200"></canvas><br>
+		<canvas id="fig_oeilQ" width="800" height="200"></canvas><br>
+
+		Signal modulé envoyé par l'émetteur :<br>
+		<canvas id="fig_module" width="800" height="200"></canvas><br>
+		
+		<h1>Canal de transmission</h1>
+		Canal de transmission :<br>
+		Niveau de bruit : <input type="range" id="bruit" value="0" min="0" max="2" step="0.1" /><br>
+		Filtrage dû au canal : <input type="range" id="filtrage" value="0" min="0" max="1.99" step="0.01" /><br><br>
+		
+		Signal sur l'antenne de réception:
+		<canvas id="fig_module_recu" width="800" height="200"></canvas><br>
+
+		<h1>Récepteur</h1>
+		Activer le filtrage adapté :
+		<SELECT name="fadapt" id="fadapt" size="1">
+			<OPTION>Non
+			<OPTION>Oui
+		</SELECT><br>
+<!--		Voies I(t) et Q(t) après démodulation :<br>
+		<canvas id="fig_Irec" width="800" height="200"></canvas><br>
+		<canvas id="fig_Qrec" width="800" height="200"></canvas><br>
+		Diagrammes de l'oeil associés :<br>
+		<canvas id="fig_oeilIrec" width="800" height="200"></canvas><br>
+		<canvas id="fig_oeilQrec" width="800" height="200"></canvas><br>-->
+
+		Voies I(t) et Q(t) après démodulation et filtrage adapté si demandé :<br>
+		<canvas id="fig_Iadapt" width="800" height="200"></canvas><br>
+		<canvas id="fig_Qadapt" width="800" height="200"></canvas><br>
+		Diagrammes de l'oeil associés :<br>
+		<canvas id="fig_oeilIadapt" width="800" height="200"></canvas><br>
+		<canvas id="fig_oeilQadapt" width="800" height="200"></canvas><br>
+		
+		Choix instant de décision :
+		<input type="range" id="inst_decision" value="0" min="0" max="1" step="0.1" /><br>
+		
+		Echantillons prélevés :<br>
+		<canvas id="fig_echantillonsI" width="800" height="200"></canvas><br>
+		<canvas id="fig_echantillonsQ" width="800" height="200"></canvas><br>
+		<label for="tab_uiq" id="tab_uiq">Valeures :</label><br>
+		
+		<label for="etats2" id="etats2">Ce que l'on devait trouver :</label><br>
+		
+		
+		Constellation :<br>
+		<canvas id="fig_const_rec" width="200" height="200"></canvas><br>
+	</body>
+</html>
