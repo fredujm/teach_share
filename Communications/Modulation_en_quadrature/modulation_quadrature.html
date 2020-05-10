@@ -1,0 +1,273 @@
+<!--
+Modulateur - démodulateur en quadrature v1.0
+@author: Frédéric BONNARDOT, AGPL-3.0-or-later license
+(c) Frédéric BONNARDOT, April 2020
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+This code is given as is without warranty of any kind.
+In no event shall the authors or copyright holder be liable for any claim
+                                                   damages or other liability.
+-->
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Modulateur - démodulateur en quadrature</title>
+
+		<script type="text/javascript" language="JavaScript" src="telecom_quad.js"></script>
+
+		<style>
+			body {margin:0}
+			canvas {background:#EEEEEE}
+		</style>
+	</head>
+
+	<body>
+		<h1>Etude de la modulation en Quadrature</h1>
+		Cette page simule un modulateur - démodulateur en quadrature<br>
+		(c) F. BONNARDOT, Avril 2020
+		<a href="https://www.gnu.org/licenses/agpl-3.0.fr.html">AGPL-3.0-or-later license</a><br>
+		Routine de calcul de la Transformée de Fourier issue de <a href="https://rosettacode.org/wiki/Fast_Fourier_transform#JavaScript">Rosetta code</a><br>
+		
+		<h1>Modulateur</h1>
+		<table align='center' border='1' cellpadding='10'> 
+		<tr> 
+		<td width='50%' style='text-align:justify;'>
+		
+		<h2>Signal x1 (t)</h2>
+		Forme du signal :
+		<SELECT id="forme_x1" size="1">
+			<OPTION>Zéro
+			<OPTION>Sinus
+			<OPTION selected>Carré
+			<OPTION>Triangle
+			<OPTION>Numérique 2 états
+		</SELECT><br>
+		Fréquence :
+		<input type="range" id="frequence_x1" value="400" min="0" max="20000" step="100"/><br>
+		Amplitude :
+		<input type="range" id="amplitude_x1" value="2" min="0" max="5" step="0.5"/><br>
+		Offset :
+		<input type="range" id="offset_x1" value="0" min="-5" max="5" step="0.5"/><br>
+		Phase :
+		<input type="range" id="phase_x1" value="0" min="0" max="360" step="45"/><br>
+
+		</td><td width='50%' style='text-align:justify;'>
+		<h2>Signal x3 (t)</h2>
+		Forme du signal :
+		<SELECT id="forme_x3" size="1">
+			<OPTION selected>Zéro
+			<OPTION>Sinus
+			<OPTION>Carré
+			<OPTION>Triangle
+			<OPTION>Numérique 2 états
+		</SELECT><br>
+		Fréquence :
+		<input type="range" id="frequence_x3" value="400" min="0" max="20000" step="100"/><br>
+		Amplitude :
+		<input type="range" id="amplitude_x3" value="2" min="0" max="5" step="0.5"/><br>
+		Offset :
+		<input type="range" id="offset_x3" value="0" min="-5" max="5" step="0.5"/><br>
+		Phase :
+		<input type="range" id="phase_x3" value="0" min="0" max="360" step="45"/><br>
+		
+		</td>
+		</tr> 
+		<tr> 
+		<td width='50%' style='text-align:justify;'>
+		<h2>Signal x2 (t) :</h2>
+		Forme du signal :
+		<SELECT id="forme_x2" size="1">
+			<OPTION>Zéro
+			<OPTION selected>Sinus
+			<OPTION>Carré
+			<OPTION>Triangle
+			<OPTION>Numérique 2 états
+		</SELECT><br>
+		Fréquence :
+		<input type="range" id="frequence_x2" value="5000" min="0" max="20000" step="100"/><br>
+		Amplitude :
+		<input type="range" id="amplitude_x2" value="2" min="0" max="5" step="0.5"/><br>
+		Offset :
+		<input type="range" id="offset_x2" value="0" min="-5" max="5" step="0.5"/><br>
+		Phase :
+		<input type="range" id="phase_x2" value="0" min="0" max="360" step="45"/><br>
+		
+
+		</td><td width='50%' style='text-align:justify;'>
+		
+		<h2>Signal x4 (t) :</h2>
+		Forme du signal : Idem x2(t) <br>
+		Fréquence : Idem x2(t)<br>
+		Amplitude : Idem x2(t)<br>
+		Offset : Idem x2(t)<br>
+		Phase :
+		<input type="range" id="phase_x4" value="0" min="0" max="360" step="45"/><br>
+		</td>
+		</tr> 
+		</table> 
+
+
+		<h2>Visualisation Signaux</h2>
+		Durée affichée :
+		<SELECT id="duree_x1_x2" size="1">
+			<OPTION>0.1 ms
+			<OPTION>1 ms
+			<OPTION selected>10 ms
+			<OPTION>100 ms
+			<OPTION>1 s
+		</SELECT><br>
+		<table>
+		<tr>
+			<td width="50%"><canvas id="fig_osc_x1" width="400" height="100"></canvas></td>
+			<td width='50%'><canvas id="fig_osc_x3" width="400" height="100"></canvas></td>
+		</tr>
+		<tr>
+			<td width='50%'><canvas id="fig_osc_x2" width="400" height="100"></canvas></td>
+			<td width='50%'><canvas id="fig_osc_x4" width="400" height="100"></canvas></td>
+		</tr>
+		<tr>
+			<td width='50%'><canvas id="fig_osc_x1_x2" width="400" height="100"></canvas></td>
+			<td width='50%'><canvas id="fig_osc_x3_x4" width="400" height="100"></canvas></td>
+		</tr>
+		</table>
+		<canvas id="fig_osc_x1234" width="800" height="100"></canvas><br>
+
+		<h2>Visualisation des Spectres</h2>
+		Bande de fréquence : de 
+		<SELECT id="freq_spec_x_bas" size="1">
+			<OPTION selected>Zéro
+			<OPTION>1000
+			<OPTION>2500
+			<OPTION>5000
+			<OPTION>7500
+			<OPTION>10000
+			<OPTION>25000
+			<OPTION>50000
+		</SELECT> Hz à 
+		<SELECT id="freq_spec_x_haut" size="1">
+			<OPTION>Zéro
+			<OPTION>1000
+			<OPTION>2500
+			<OPTION>5000
+			<OPTION>7500
+			<OPTION>10000
+			<OPTION>25000
+			<OPTION selected>50000
+		</SELECT> Hz.<br>
+		<table>
+		<tr>
+			<td><canvas id="fig_spec_x1" width="400" height="100"></canvas></td>
+			<td><canvas id="fig_spec_x3" width="400" height="100"></canvas></td>
+		</tr>
+		<tr>
+			<td><canvas id="fig_spec_x2" width="400" height="100"></canvas></td>
+			<td><canvas id="fig_spec_x4" width="400" height="100"></canvas></td>
+		</tr>
+		<tr>
+			<td><canvas id="fig_spec_x1_x2" width="400" height="100"></canvas></td>
+			<td><canvas id="fig_spec_x3_x4" width="400" height="100"></canvas></td>
+		</tr>
+		</table>
+		<canvas id="fig_spec_x1234" width="800" height="100"></canvas></br>
+
+		<h1>Démodulateur</h1>
+		<h2>Signal x5 (t) :</h2>
+		Forme du signal : Idem x2(t) <br>
+		Fréquence : Idem x2(t)<br>
+		Amplitude : Idem x2(t)<br>
+		Offset : Idem x2(t)<br>
+		Phase :
+		<input type="range" id="phase_x5" value="0" min="0" max="360" step="22.5"/><br>
+		
+		<canvas id="fig_osc_x5" width="800" height="100"></canvas>
+
+		<h2>Visualisation et calcul des signaux</h2>
+		Durée affichée :
+		<SELECT id="duree_x678" size="1">
+			<OPTION>0.1 ms
+			<OPTION>1 ms
+			<OPTION selected>10 ms
+			<OPTION>100 ms
+			<OPTION>1 s
+		</SELECT><br>
+		
+		Bande de fréquence : de 
+		<SELECT id="freq_spec_x678_bas" size="1">
+			<OPTION selected>Zéro
+			<OPTION>1000
+			<OPTION>2500
+			<OPTION>5000
+			<OPTION>7500
+			<OPTION>10000
+			<OPTION>25000
+			<OPTION>50000
+		</SELECT> Hz à 
+		<SELECT id="freq_spec_x678_haut" size="1">
+			<OPTION>Zéro
+			<OPTION>1000
+			<OPTION>2500
+			<OPTION>5000
+			<OPTION>7500
+			<OPTION>10000
+			<OPTION>25000
+			<OPTION selected>50000
+		</SELECT> Hz.<br>
+		
+		Filtrage : <input type="range" id="filtre_pb" value="0" min="0" max="20" step="1"/><br>
+		
+		<h3>Calcul de x6 (t)</h3>
+		On reçoit module (t), que dois-je faire pour obtenir x6 (t) ?
+		<SELECT id="ope_1" size="1">
+			<OPTION selected>on le redresse (valeur absolue)
+			<OPTION>on le filtre passe bas
+			<OPTION>on le multiplie par x5 (t)
+		</SELECT><br>
+		
+		Voici le résultat : <br>
+		<canvas id="fig_osc_x6" width="800" height="100"></canvas></br>
+
+		Voici le spectre du résultat : <br> 
+		<canvas id="fig_spec_x6" width="800" height="100"></canvas></br>
+
+		<h3>Calcul de x7 (t)</h3>
+		On reçoit x6 (t), que dois-je faire pour obtenir x7 (t) ?
+		<SELECT id="ope_2" size="1">
+			<OPTION selected>on le redresse (valeur absolue)
+			<OPTION>on le filtre passe bas
+			<OPTION>on le multiplie par x5 (t)
+		</SELECT><br>
+		
+		Voici le résultat : <br>
+		<canvas id="fig_osc_x7" width="800" height="100"></canvas></br>
+
+		Voici le spectre du résultat : <br> 
+		<canvas id="fig_spec_x7" width="800" height="100"></canvas></br>
+
+		<h3>Calcul de x8 (t)</h3>
+		On reçoit x7 (t), que dois-je faire pour obtenir x8 (t) ?
+		<SELECT id="ope_3" size="1">
+			<OPTION selected>on le redresse (valeur absolue)
+			<OPTION>on le filtre passe bas
+			<OPTION>on le multiplie par x5 (t)
+		</SELECT><br>
+		
+		Voici le résultat : <br>
+		<canvas id="fig_osc_x8" width="800" height="100"></canvas></br>
+
+		Voici le spectre du résultat : <br> 
+		<canvas id="fig_spec_x8" width="800" height="100"></canvas></br>
+
+	</body>
+</html>
