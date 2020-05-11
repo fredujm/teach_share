@@ -1,10 +1,10 @@
-# Modulation en quadrature
+# Chaîne de transmission numérique basique
 
-Cette ressource vous permet de simuler un modulateur - démodulateur en quadrature avec un simple fichier html.
+Cette ressource vous permet de simuler un chaîne de transmission numérique basique avec un simple fichier html.
 
 Il y a deux versions :
-* modulation_quadrature.html et telecom_quad.js : Fichier html et code javascript séparés dans deux fichiers.
-* modulation_quadrature_tout.html : Tout est contenu dans un unique fichier html.
+* chaine_transmission.html et telecom.js : Fichier html et code javascript séparés dans deux fichiers.
+* chaine_transmission_tout_en_un.html : Tout est contenu dans un unique fichier html.
 
 Do not consider these tools as perfect or free of error. They can help you but be critical about their results.
 

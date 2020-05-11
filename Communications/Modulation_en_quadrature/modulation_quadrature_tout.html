@@ -1,5 +1,5 @@
 <!--
-Modulateur - démodulateur en quadrature v1.0
+Modulateur - démodulateur en quadrature v1.2
 @author: Frédéric BONNARDOT, AGPL-3.0-or-later license
 (c) Frédéric BONNARDOT, April 2020
 
@@ -445,16 +445,19 @@ class Generateur {
 
 		switch(forme) {
 			case 0 :
+				// Zéro
 				for (let index=0;index<this.N;index++)
 					this.signal.push(0);
 				break;
 
 			case 1 :
+				// Sinus
 				for (let index=0;index<this.N;index++)
 					this.signal.push(amp*Math.sin(2*Math.PI*index*this.Tech*freq+phase/180*Math.PI)+offset);
 				break;
 
 			case 2 :
+				// Carré
 				for (let index=0;index<this.N;index++) {
 					/*if ((2*Math.PI*index*this.Tech*freq+phase/180*Math.PI) % 2*Math.PI < Math.PI)
 						this.signal.push(amp);
@@ -462,33 +465,36 @@ class Generateur {
 						this.signal.push(-1.*amp);*/
 					let s=offset;
 					for (let h=0;h<15;h++)
-						s=s+amp/(2*h+1)*Math.sin(2*Math.PI*index*this.Tech*freq*(2*h+1)+phase/180*Math.PI)*4/Math.PI;
+						s=s+amp/(2*h+1)*Math.sin(2*Math.PI*index*this.Tech*freq*(2*h+1)+(2*h+1)*phase/180*Math.PI)*4/Math.PI;
 					this.signal.push(s);
 				}
 				break;
 				
 			case 3 :
+				// Triangle
 				for (let index=0;index<this.N;index++) {
-					/*if ((2*Math.PI*index*this.Tech*freq+phase/180*Math.PI) % 2*Math.PI < Math.PI)
-						this.signal.push(amp);
-					else
-						this.signal.push(-1.*amp);*/
 					let s=offset;
 					for (let h=0;h<10;h++)
-						s=s+amp/(2*h+1)/(2*h+1)*((-1)**h)*Math.sin(2*Math.PI*index*this.Tech*freq*(2*h+1)+phase/180*Math.PI)*8/Math.PI/Math.PI;
+						s=s+amp/(2*h+1)/(2*h+1)*((-1)**h)*Math.sin(2*Math.PI*index*this.Tech*freq*(2*h+1)+(2*h+1)*phase/180*Math.PI)*8/Math.PI/Math.PI;
 					this.signal.push(s);
 				}
 				break;
 				
 			case 4 :
-				let symb=Math.random()>0.5?-1:1;
-				for (let index=0;index<this.N;index++) {
-					if ((2*Math.PI*index*this.Tech*freq+phase/180*Math.PI) % 2*Math.PI < 2*Math.PI*this.Tech*freq+phase/180*Math.PI)
-						symb=Math.random()>0.5?-1:1;
-						
-					this.signal.push(symb);
-						
+				var symb;
+				var per;
+				
+				if (freq!=0)
+					per=1/freq/this.Tech;
+				else
+					per=this.N;
+					
+				for (let index=0;index<this.N;index+=per) {
+					symb=Math.random()>0.5?-1:1;
+					for (let index2=index;index2<Math.min(this.N,index+per);index2++)
+						this.signal.push(symb);
 				}
+				
 				break;
 		}
 			
@@ -653,13 +659,30 @@ class Spectre {
 	mise_a_jour() {
 		// Calcule le module de la FFT
 		this.signal=[];
+		
+		// Version Welch 3 moyennes
+/*		let tf1=[];
+		let tf2=[];
+		let tf3=[];
+		for (let index=0;index<this.N/2;index++)
+			tf1.push(this.sig1.signal[index]);
+		for (let index=this.N/4;index<this.N*3/4;index++)
+			tf2.push(this.sig1.signal[index]);
+		for (let index=this.N/2;index<this.N;index++)
+			tf3.push(this.sig1.signal[index]);
+		tf1=cfft(tf1);	tf2=cfft(tf2);	tf3=cfft(tf3);
+		for (let index=0;index<this.N/2;index++)
+			this.signal.push(Math.sqrt(( tf1[index].re*tf1[index].re+tf1[index].im*tf1[index].im
+									    +tf2[index].re*tf2[index].re+tf2[index].im*tf2[index].im
+									    +tf3[index].re*tf3[index].re+tf3[index].im*tf3[index].im)/3.));
+*/
 		let tf=[];
 		for (let index=0;index<this.N;index++)
 			tf.push(this.sig1.signal[index]);
 		tf=cfft(tf);
 		for (let index=0;index<this.N;index++)
 			this.signal.push(Math.sqrt(tf[index].re*tf[index].re+tf[index].im*tf[index].im));
-			
+									    	
 		// Appel de la fonction de callback
 		if (this.callback_maj.length>0)
 			for (let index=0;index<this.callback_maj.length;index++)
@@ -688,7 +711,7 @@ function minim(signal) {
 }
 
 
-const valBaseTps=[0.1e-3,1e-3,10e-3,100e-3,1.];
+const valBaseTps=[0.1e-3,0.3e-3,1e-3,3e-3,10e-3,30e-3,100e-3,300e-3,1.];
 
 class Oscilloscope {
 	constructor(nom_fig,base_tps,nom_sig,generateur) {
@@ -837,7 +860,6 @@ function run(){
 	let spec_x7 = new ASpectre("fig_spec_x7","freq_spec_x678","X7(f)",tf_x7);
 	let spec_x8 = new ASpectre("fig_spec_x8","freq_spec_x678","X8(f)",tf_x8);
 }
-
 		</script>
 
 		<style>
@@ -850,7 +872,8 @@ function run(){
 		<h1>Etude de la modulation en Quadrature</h1>
 		Cette page simule un modulateur - démodulateur en quadrature<br>
 		(c) F. BONNARDOT, Avril 2020
-		<a href="https://www.gnu.org/licenses/agpl-3.0.fr.html">AGPL-3.0-or-later license</a><br>
+		<a href="https://www.gnu.org/licenses/agpl-3.0.fr.html">AGPL-3.0-or-later license</a>
+		<a href="https://github.com/fredujm/teach_share/tree/master/Communications">Accès code source</a><br>
 		Routine de calcul de la Transformée de Fourier issue de <a href="https://rosettacode.org/wiki/Fast_Fourier_transform#JavaScript">Rosetta code</a><br>
 		
 		<h1>Modulateur</h1>
@@ -868,7 +891,7 @@ function run(){
 			<OPTION>Numérique 2 états
 		</SELECT><br>
 		Fréquence :
-		<input type="range" id="frequence_x1" value="400" min="0" max="20000" step="100"/><br>
+		<input type="range" id="frequence_x1" value="400" min="0" max="10000" step="100"/><br>
 		Amplitude :
 		<input type="range" id="amplitude_x1" value="2" min="0" max="5" step="0.5"/><br>
 		Offset :
@@ -887,7 +910,7 @@ function run(){
 			<OPTION>Numérique 2 états
 		</SELECT><br>
 		Fréquence :
-		<input type="range" id="frequence_x3" value="400" min="0" max="20000" step="100"/><br>
+		<input type="range" id="frequence_x3" value="400" min="0" max="10000" step="100"/><br>
 		Amplitude :
 		<input type="range" id="amplitude_x3" value="2" min="0" max="5" step="0.5"/><br>
 		Offset :
@@ -909,7 +932,7 @@ function run(){
 			<OPTION>Numérique 2 états
 		</SELECT><br>
 		Fréquence :
-		<input type="range" id="frequence_x2" value="5000" min="0" max="20000" step="100"/><br>
+		<input type="range" id="frequence_x2" value="5000" min="0" max="10000" step="100"/><br>
 		Amplitude :
 		<input type="range" id="amplitude_x2" value="2" min="0" max="5" step="0.5"/><br>
 		Offset :
@@ -936,9 +959,13 @@ function run(){
 		Durée affichée :
 		<SELECT id="duree_x1_x2" size="1">
 			<OPTION>0.1 ms
+			<OPTION>0.3 ms
 			<OPTION>1 ms
+			<OPTION>3 ms
 			<OPTION selected>10 ms
+			<OPTION>30 ms
 			<OPTION>100 ms
+			<OPTION>300 ms
 			<OPTION>1 s
 		</SELECT><br>
 		<table>
@@ -1010,9 +1037,13 @@ function run(){
 		Durée affichée :
 		<SELECT id="duree_x678" size="1">
 			<OPTION>0.1 ms
+			<OPTION>0.3 ms
 			<OPTION>1 ms
+			<OPTION>3 ms
 			<OPTION selected>10 ms
+			<OPTION>30 ms
 			<OPTION>100 ms
+			<OPTION>300 ms
 			<OPTION>1 s
 		</SELECT><br>
 		

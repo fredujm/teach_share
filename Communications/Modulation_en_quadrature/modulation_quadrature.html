@@ -1,5 +1,5 @@
 <!--
-Modulateur - démodulateur en quadrature v1.0
+Modulateur - démodulateur en quadrature v1.2
 @author: Frédéric BONNARDOT, AGPL-3.0-or-later license
 (c) Frédéric BONNARDOT, April 2020
 
@@ -37,7 +37,8 @@ In no event shall the authors or copyright holder be liable for any claim
 		<h1>Etude de la modulation en Quadrature</h1>
 		Cette page simule un modulateur - démodulateur en quadrature<br>
 		(c) F. BONNARDOT, Avril 2020
-		<a href="https://www.gnu.org/licenses/agpl-3.0.fr.html">AGPL-3.0-or-later license</a><br>
+		<a href="https://www.gnu.org/licenses/agpl-3.0.fr.html">AGPL-3.0-or-later license</a>
+		<a href="https://github.com/fredujm/teach_share/tree/master/Communications">Accès code source</a><br>
 		Routine de calcul de la Transformée de Fourier issue de <a href="https://rosettacode.org/wiki/Fast_Fourier_transform#JavaScript">Rosetta code</a><br>
 		
 		<h1>Modulateur</h1>
@@ -55,7 +56,7 @@ In no event shall the authors or copyright holder be liable for any claim
 			<OPTION>Numérique 2 états
 		</SELECT><br>
 		Fréquence :
-		<input type="range" id="frequence_x1" value="400" min="0" max="20000" step="100"/><br>
+		<input type="range" id="frequence_x1" value="400" min="0" max="10000" step="100"/><br>
 		Amplitude :
 		<input type="range" id="amplitude_x1" value="2" min="0" max="5" step="0.5"/><br>
 		Offset :
@@ -74,7 +75,7 @@ In no event shall the authors or copyright holder be liable for any claim
 			<OPTION>Numérique 2 états
 		</SELECT><br>
 		Fréquence :
-		<input type="range" id="frequence_x3" value="400" min="0" max="20000" step="100"/><br>
+		<input type="range" id="frequence_x3" value="400" min="0" max="10000" step="100"/><br>
 		Amplitude :
 		<input type="range" id="amplitude_x3" value="2" min="0" max="5" step="0.5"/><br>
 		Offset :
@@ -96,7 +97,7 @@ In no event shall the authors or copyright holder be liable for any claim
 			<OPTION>Numérique 2 états
 		</SELECT><br>
 		Fréquence :
-		<input type="range" id="frequence_x2" value="5000" min="0" max="20000" step="100"/><br>
+		<input type="range" id="frequence_x2" value="5000" min="0" max="10000" step="100"/><br>
 		Amplitude :
 		<input type="range" id="amplitude_x2" value="2" min="0" max="5" step="0.5"/><br>
 		Offset :
@@ -123,9 +124,13 @@ In no event shall the authors or copyright holder be liable for any claim
 		Durée affichée :
 		<SELECT id="duree_x1_x2" size="1">
 			<OPTION>0.1 ms
+			<OPTION>0.3 ms
 			<OPTION>1 ms
+			<OPTION>3 ms
 			<OPTION selected>10 ms
+			<OPTION>30 ms
 			<OPTION>100 ms
+			<OPTION>300 ms
 			<OPTION>1 s
 		</SELECT><br>
 		<table>
@@ -197,9 +202,13 @@ In no event shall the authors or copyright holder be liable for any claim
 		Durée affichée :
 		<SELECT id="duree_x678" size="1">
 			<OPTION>0.1 ms
+			<OPTION>0.3 ms
 			<OPTION>1 ms
+			<OPTION>3 ms
 			<OPTION selected>10 ms
+			<OPTION>30 ms
 			<OPTION>100 ms
+			<OPTION>300 ms
 			<OPTION>1 s
 		</SELECT><br>
 		
